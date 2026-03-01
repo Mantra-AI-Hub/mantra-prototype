@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package mantra;
+
+/*
+ Интервал между двумя последовательными нотами.
+ value — разница по pitch (в полутоновом представлении)
+ duration — длительность предыдущей ноты (в секундах)
+*/
+message Interval {
+  int32 value = 1;
+  float duration = 2;
+}
+
+/*
+ MelodicFingerprint — абстрактная сигнатура мелодии.
+ Хранит только интервалы (не исходные ноты).
+*/
+message MelodicFingerprint {
+  repeated Interval intervals = 1;
+  string source_file = 2;
+}
