@@ -1,4 +1,4 @@
-from builder.fingerprint_builder import FingerprintBuilder
+from mantra.fingerprinting.midi.fingerprint_builder import FingerprintBuilder
 
 
 def main():

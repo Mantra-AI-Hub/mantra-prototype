@@ -1,7 +1,7 @@
 import pytest
 
-from core.fingerprint import build_fingerprint_from_pitch
-from core.similarity import calculate_similarity
+from mantra.fingerprinting.midi.fingerprint import build_fingerprint_from_pitch
+from mantra.similarity.similarity import calculate_similarity
 
 
 def test_identical_similarity():
