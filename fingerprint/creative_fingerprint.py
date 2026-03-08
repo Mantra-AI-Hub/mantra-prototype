@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from fingerprint.metadata import Metadata
-from fingerprint.melody_features import MelodyFeatures
+from mantra.fingerprint.metadata import Metadata
+from mantra.fingerprint.melody_features import MelodyFeatures
 
 
 @dataclass(frozen=True)

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from protos import fingerprint_pb2
+from mantra.protos import fingerprint_pb2
 
 
 def load_intervals(path: str):

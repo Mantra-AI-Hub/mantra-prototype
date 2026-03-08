@@ -1,13 +1,13 @@
 from datetime import datetime
 from typing import List
 
-from extraction.midi_parser import parse_midi_notes
-from core_algorithms.interval import build_interval_sequence
-from core_algorithms.rolling_hash import polynomial_hash, ngram_hashes
+from mantra.extraction.midi_parser import parse_midi_notes
+from mantra.core_algorithms.interval import build_interval_sequence
+from mantra.core_algorithms.rolling_hash import polynomial_hash, ngram_hashes
 
-from fingerprint.metadata import Metadata
-from fingerprint.melody_features import MelodyFeatures
-from fingerprint.creative_fingerprint import CreativeFingerprint
+from mantra.fingerprint.metadata import Metadata
+from mantra.fingerprint.melody_features import MelodyFeatures
+from mantra.fingerprint.creative_fingerprint import CreativeFingerprint
 
 
 class FingerprintBuilder:

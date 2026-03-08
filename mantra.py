@@ -3,8 +3,8 @@ import os
 from mido import MidiFile
 from itertools import islice
 
-from sqlite_persistence import SQLitePersistence
-from similarity_engine import SimilarityEngine
+from mantra.sqlite_persistence import SQLitePersistence
+from mantra.similarity_engine import SimilarityEngine
 
 
 # ============================================================

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 import numpy as np
 
-from core_algorithms.interval import compute_intervals, normalize_intervals
+from mantra.core_algorithms.interval import compute_intervals, normalize_intervals
 
 
 @dataclass

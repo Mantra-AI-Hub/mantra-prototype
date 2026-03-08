@@ -1,8 +1,8 @@
 from typing import Dict, List, Tuple
-from fingerprint.creative_fingerprint import CreativeFingerprint
+from mantra.fingerprint.creative_fingerprint import CreativeFingerprint
 
-from core_algorithms.minhash import MinHasher, estimate_similarity
-from indexing.lsh_index import LSHIndex
+from mantra.core_algorithms.minhash import MinHasher, estimate_similarity
+from mantra.indexing.lsh_index import LSHIndex
 from mantra.storage.sqlite_store import SQLiteStore
 
 

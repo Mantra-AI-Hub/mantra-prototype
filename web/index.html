@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>MANTRA Search UI</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem; background: linear-gradient(120deg,#f8f6ef,#e9f3ff); }
+    .card { background: white; padding: 1rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.08); max-width: 720px; }
+    pre { background: #111; color: #e9f3ff; padding: .75rem; border-radius: 8px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>MANTRA Semantic Search</h1>
+    <input id="audio" type="file" accept=".wav" />
+    <button id="searchBtn">Search</button>
+    <pre id="out">Upload a WAV file and run search.</pre>
+  </div>
+  <script>
+    async function uploadAndSearch() {
+      const fileInput = document.getElementById('audio');
+      const out = document.getElementById('out');
+      if (!fileInput.files.length) {
+        out.textContent = 'Please select a WAV file.';
+        return;
+      }
+      const file = fileInput.files[0];
+      const buf = await file.arrayBuffer();
+      const response = await fetch('/search/audio?filename=' + encodeURIComponent(file.name) + '&top_k=5', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/octet-stream' },
+        body: buf,
+      });
+      const data = await response.json();
+      out.textContent = JSON.stringify(data, null, 2);
+    }
+    document.getElementById('searchBtn').addEventListener('click', uploadAndSearch);
+  </script>
+</body>
+</html>

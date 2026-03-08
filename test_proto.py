@@ -1,4 +1,4 @@
-from protos import fingerprint_pb2
+from mantra.protos import fingerprint_pb2
 
 
 def main():

@@ -11,7 +11,7 @@ from typing import List, Tuple
 
 import mido
 
-from protos import fingerprint_pb2
+from mantra.protos import fingerprint_pb2
 
 
 class MIDIParser:

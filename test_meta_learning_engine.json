@@ -1,0 +1,162 @@
+[
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  },
+  {
+    "pipeline_name": "p1",
+    "metrics": {
+      "quality": 0.8,
+      "engagement": 0.7,
+      "latency": 0.2
+    },
+    "metadata": {},
+    "score": 0.74
+  },
+  {
+    "pipeline_name": "p2",
+    "metrics": {
+      "quality": 0.7,
+      "engagement": 0.6,
+      "latency": 0.1
+    },
+    "metadata": {},
+    "score": 0.6499999999999999
+  }
+]
