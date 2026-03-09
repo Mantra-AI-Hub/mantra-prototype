@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import numpy as np
 
 from mantra.intelligence.evolution_engine import EvolutionEngine, TrackFitness, TrackGenome
+from mantra.intelligence.track_originality_engine import OriginalityResult, TrackFingerprint, TrackOriginalityEngine
 
 if TYPE_CHECKING:
     from mantra.feature_store import FeatureStore
@@ -53,8 +54,10 @@ class GlobalMusicIntelligenceEngine:
     def __init__(self, seed: int = 0, feature_store: Optional["FeatureStore"] = None):
         self._rng = np.random.default_rng(seed)
         self.feature_store = feature_store or self._create_feature_store()
+        self.originality_engine = TrackOriginalityEngine()
         self.feature_vectors: List[MusicFeatureVector] = []
         self.engagement_snapshots: List[EngagementSnapshot] = []
+        self.originality_results: List[OriginalityResult] = []
         self.feature_correlations: Dict[str, Dict[str, float]] = {}
         self.trend_patterns: List[TrendPattern] = []
         self._data_ingested = False
@@ -95,6 +98,8 @@ class GlobalMusicIntelligenceEngine:
     def _populate_from_dataset(self, dataset: List[Tuple[TrackGenome, TrackFitness]]) -> None:
         self.feature_vectors = []
         self.engagement_snapshots = []
+        originality_library: List[TrackFingerprint] = []
+        self.originality_results = []
         for genome, fitness in dataset:
             vector = self._vector_from_genome(genome)
             snapshot = EngagementSnapshot(
@@ -109,6 +114,13 @@ class GlobalMusicIntelligenceEngine:
             )
             self.feature_vectors.append(vector)
             self.engagement_snapshots.append(snapshot)
+            fingerprint = self.originality_engine.extract_fingerprint(
+                self._track_payload_from_vector(vector, snapshot.track_id)
+            )
+            self.originality_results.append(
+                self.originality_engine.compute_originality(fingerprint, originality_library)
+            )
+            originality_library.append(fingerprint)
         self._data_ingested = True
 
     def _vector_from_genome(self, genome: TrackGenome) -> MusicFeatureVector:
@@ -252,6 +264,53 @@ class GlobalMusicIntelligenceEngine:
             "sampled_engagement": engagements,
             "population": len(self.feature_vectors),
         }
+
+    def _track_payload_from_vector(self, vector: MusicFeatureVector, track_id: str) -> Dict[str, object]:
+        return {
+            "track_id": track_id,
+            "tempo": vector.tempo,
+            "energy": vector.energy,
+            "mood": vector.mood,
+            "novelty": vector.novelty,
+            "rhythm_complexity": vector.rhythm_complexity,
+            "harmonic_density": vector.harmonic_density,
+            "emotional_intensity": vector.emotional_intensity,
+            "feature_vector": [
+                vector.tempo / 180.0,
+                vector.energy,
+                vector.mood,
+                vector.novelty,
+                vector.rhythm_complexity,
+                vector.harmonic_density,
+                vector.emotional_intensity,
+            ],
+        }
+
+    def originality_library(self) -> List[TrackFingerprint]:
+        self.ingest_experiment_data()
+        library: List[TrackFingerprint] = []
+        for vector, snapshot in zip(self.feature_vectors, self.engagement_snapshots):
+            library.append(self.originality_engine.extract_fingerprint(self._track_payload_from_vector(vector, snapshot.track_id)))
+        return library
+
+    def assess_originality(
+        self,
+        track_data: Mapping[str, object],
+        library: Optional[Sequence[TrackFingerprint]] = None,
+        seed: int = 0,
+    ) -> OriginalityResult:
+        active_library = list(library) if library is not None else self.originality_library()
+        payload = dict(track_data)
+        payload.setdefault("track_id", f"track_candidate_{seed}")
+        payload.setdefault("feature_vector", self._fallback_feature_vector(str(payload["track_id"]), seed=seed))
+        fingerprint = self.originality_engine.extract_fingerprint(payload)
+        return self.originality_engine.compute_originality(fingerprint, active_library)
+
+    def _fallback_feature_vector(self, track_id: str, seed: int = 0, size: int = 8) -> List[float]:
+        encoded = np.frombuffer(track_id.encode("utf-8"), dtype=np.uint8)
+        base = int(np.sum(encoded, dtype=np.uint64) % np.uint64(2**32 - 1))
+        rng = np.random.default_rng(base + int(seed))
+        return rng.uniform(0.0, 1.0, size=size).astype(float).tolist()
 
     def describe_snapshot(self, snapshot: EngagementSnapshot) -> Dict[str, object]:
         return snapshot.__dict__

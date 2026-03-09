@@ -87,6 +87,7 @@ from mantra.intelligence.global_music_intelligence import (
     HitPrediction,
     MusicFeatureVector,
 )
+from mantra.intelligence.track_originality_engine import TrackOriginalityEngine
 from mantra.intelligence.music_foundation_model import MusicFoundationModel as IntelligenceMusicFoundationModel
 from mantra.intelligence.music_genome_engine import MusicGenomeEngine
 from mantra.intelligence.music_genome_store import MusicGenomeStore
@@ -130,6 +131,7 @@ _embedding_engine = EmbeddingEngine()
 _embedding_engine.load_model()
 _experiment_router = ExperimentRouter(db_path=str(_DATA_DIR / "experiments.db"))
 _feature_store = FeatureStore(db_path=str(_DATA_DIR / "feature_store.db"))
+_track_originality_engine = TrackOriginalityEngine()
 _vector_index_service = VectorIndexService(index_path=str(_DATA_DIR / "home_vector_index"))
 _session_model = SessionModel()
 _event_stream = EventStream()
@@ -556,6 +558,23 @@ class IntelligencePredictRequest(BaseModel):
     rhythm_complexity: float
     harmonic_density: float
     emotional_intensity: Optional[float] = None
+
+
+class OriginalityCheckRequest(BaseModel):
+    track_id: str
+    melody_vector: List[float] | None = None
+    harmony_vector: List[float] | None = None
+    rhythm_vector: List[float] | None = None
+    energy_vector: List[float] | None = None
+    feature_vector: List[float] | None = None
+    tempo: float | None = None
+    energy: float | None = None
+    mood: float | None = None
+    novelty: float | None = None
+    rhythm_complexity: float | None = None
+    harmonic_density: float | None = None
+    emotional_intensity: float | None = None
+    library: List[Dict[str, object]] | None = None
 
 
 def _decode_wav_bytes(raw_bytes: bytes) -> AudioData:
@@ -1634,6 +1653,19 @@ def ai_intelligence_predict(payload: IntelligencePredictRequest) -> Dict[str, ob
         expected_virality=expected_virality,
     )
     return prediction.__dict__
+
+
+@app.post("/ai/originality/check")
+def ai_originality_check(payload: OriginalityCheckRequest) -> Dict[str, object]:
+    track_payload = payload.model_dump(exclude={"library"}, exclude_none=True)
+    track_fp = _track_originality_engine.extract_fingerprint(track_payload)
+    library_payload = payload.library
+    if library_payload is None:
+        library = _global_music_intelligence.originality_library()
+    else:
+        library = [_track_originality_engine.extract_fingerprint(item) for item in library_payload]
+    result = _track_originality_engine.compute_originality(track_fp, library)
+    return result.__dict__
 
 
 if __name__ == "__main__":

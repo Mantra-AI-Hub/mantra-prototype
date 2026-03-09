@@ -8,6 +8,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 from mantra.intelligence.synthetic_listener_engine import SyntheticListenerEngine, TrackEngagement
+from mantra.intelligence.track_originality_engine import OriginalityResult, TrackFingerprint, TrackOriginalityEngine
 
 
 @dataclass
@@ -35,6 +36,9 @@ class EvolutionEngine:
     def __init__(self, seed: int = 24) -> None:
         self._rng = np.random.default_rng(seed)
         self.synthetic = SyntheticListenerEngine(seed=seed)
+        self.originality_engine = TrackOriginalityEngine()
+        self.originality_library: List[TrackFingerprint] = []
+        self.last_originality_results: List[OriginalityResult] = []
         self.population: List[TrackGenome] = []
         self.fitnesses: List[TrackFitness] = []
         self.generation: int = 0
@@ -44,6 +48,8 @@ class EvolutionEngine:
 
     def initialize_population(self, population_size: int) -> List[TrackGenome]:
         self.population = []
+        self.originality_library = []
+        self.last_originality_results = []
         n = max(1, int(population_size))
         for idx in range(n):
             genome = TrackGenome(
@@ -55,10 +61,12 @@ class EvolutionEngine:
                 rhythm_complexity=self._random_feature(),
                 harmonic_density=self._random_feature(),
             )
+            self._register_originality(genome)
             self.population.append(genome)
         return list(self.population)
 
     def _genome_to_track(self, genome: TrackGenome) -> Dict[str, object]:
+        originality = self.assess_originality(genome)
         return {
             "track_id": genome.track_id,
             "vector": [
@@ -74,7 +82,42 @@ class EvolutionEngine:
             "quality_score": (genome.energy + genome.mood) / 2.0,
             "emotional_score": genome.harmonic_density,
             "novelty_score": genome.novelty,
+            "originality_score": originality.originality_score,
+            "similarity_score": originality.similarity_score,
         }
+
+    def _genome_to_originality_payload(self, genome: TrackGenome) -> Dict[str, object]:
+        return {
+            "track_id": genome.track_id,
+            "tempo": genome.tempo,
+            "energy": genome.energy,
+            "mood": genome.mood,
+            "novelty": genome.novelty,
+            "rhythm_complexity": genome.rhythm_complexity,
+            "harmonic_density": genome.harmonic_density,
+            "emotional_intensity": float(
+                np.clip((genome.energy + genome.mood + genome.harmonic_density) / 3.0, 0.0, 1.0)
+            ),
+            "feature_vector": [
+                genome.tempo / 180.0,
+                genome.energy,
+                genome.mood,
+                genome.novelty,
+                genome.rhythm_complexity,
+                genome.harmonic_density,
+            ],
+        }
+
+    def assess_originality(self, genome: TrackGenome) -> OriginalityResult:
+        fingerprint = self.originality_engine.extract_fingerprint(self._genome_to_originality_payload(genome))
+        return self.originality_engine.compute_originality(fingerprint, self.originality_library)
+
+    def _register_originality(self, genome: TrackGenome) -> OriginalityResult:
+        fingerprint = self.originality_engine.extract_fingerprint(self._genome_to_originality_payload(genome))
+        result = self.originality_engine.compute_originality(fingerprint, self.originality_library)
+        self.originality_library.append(fingerprint)
+        self.last_originality_results.append(result)
+        return result
 
     def mutate_genome(self, genome: TrackGenome) -> TrackGenome:
         delta = lambda value: float(np.clip(value + self._rng.normal(0, 0.05), 0.0, 1.0))
@@ -139,6 +182,10 @@ class EvolutionEngine:
             child = self.crossover_genomes(parent_a, parent_b)
             offspring.append(self.mutate_genome(child))
         self.fitnesses = [fitness for _, fitness in pool]
+        self.originality_library = []
+        self.last_originality_results = []
+        for genome in offspring:
+            self._register_originality(genome)
         self.population = offspring
         self.generation += 1
         return list(self.population)
